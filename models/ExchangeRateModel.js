@@ -1,8 +1,8 @@
 class ExchangeRateModel {
-    constructor(data, destination) {
-        this.source = data.source;
-        this.destination = destination;
-        this.exchangeRate = data.quotes[`${data.source}${destination}`];
+    constructor(data) {
+        this.source = data.base_code;
+        this.destination = data.target_code;
+        this.exchangeRate = data.conversion_rate;
     }
 }
 
