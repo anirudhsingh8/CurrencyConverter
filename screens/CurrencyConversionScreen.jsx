@@ -1,12 +1,6 @@
-import { FontAwesome6 } from "@expo/vector-icons";
-import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
+import CurrencyInput from "../components/CurrencyInput";
 import GetExchangeRate from "../services/GetExchangeRate";
 
 const CurrencyConversionScreen = () => {
@@ -17,44 +11,27 @@ const CurrencyConversionScreen = () => {
   const [destinationAmt, setDestinationAmt] = useState(0.0);
   const [exchange, setExchangeModel] = useState(null);
 
-  function handleSourceAmountChange(val) {
-    setSourceAmt(val);
-  }
-
-  function updateDestinationAmount() {
-    if (exchange == null) return;
-
-    setDestinationAmt(sourceAmt * exchange.exchangeRate);
-  }
-
-  async function fetchExchangeRate() {
+  const fetchExchangeRate = useCallback(async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await GetExchangeRate({
-        source: source,
-        destination: destination,
-      });
+      const res = await GetExchangeRate({ source, destination });
       setExchangeModel(res);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
-  }
-
-  async function swapCurrencies() {
-    const temp = source;
-    setSource(destination);
-    setDestination(temp);
-  }
+  }, [source, destination]);
 
   useEffect(() => {
     fetchExchangeRate();
-  }, [destination]);
+  }, [fetchExchangeRate]);
 
   useEffect(() => {
-    updateDestinationAmount();
-  }, [sourceAmt]);
+    if (exchange) {
+      setDestinationAmt(sourceAmt * exchange.exchangeRate);
+    }
+  }, [sourceAmt, exchange]);
 
   if (loading) {
     return (
@@ -63,37 +40,27 @@ const CurrencyConversionScreen = () => {
       </View>
     );
   }
+
   return (
-    <View className="flex-1">
+    <View className="flex-1 p-4">
       <Text className="font-bold text-center text-lg my-4">
         Currency Converter
       </Text>
 
-      {/* Source Component */}
-      <View className="flex-row justify-center items-center">
-        <Text className="mr-4 font-semibold text-xl">{source}</Text>
-        <TextInput
-          value={sourceAmt.toString()}
-          onChangeText={handleSourceAmountChange}
-          className="flex-1 bg-cyan-100 rounded-md font-semibold px-2 py-4 text-xl"
-        />
-      </View>
+      <CurrencyInput
+        label={source}
+        value={sourceAmt}
+        onChange={setSourceAmt}
+      />
 
-      {/* Seperator */}
-      <TouchableOpacity onPress={swapCurrencies}>
-        <View className="flex-row py-8 items-center justify-center">
-          <FontAwesome6 name="arrow-down-long" />
-        </View>
-      </TouchableOpacity>
+      {/* Separator */}
+      <View className="flex-row py-4 items-center justify-center" />
 
-      {/* Destination Component */}
-      <View className="flex-row justify-center items-center">
-        <Text className="mr-4 font-semibold text-xl">{destination}</Text>
-        <TextInput
-          value={destinationAmt.toString()}
-          className="flex-1 bg-cyan-100 rounded-md font-semibold px-2 py-4 text-xl"
-        />
-      </View>
+      <CurrencyInput
+        label={destination}
+        value={destinationAmt}
+        readOnly={true}
+      />
     </View>
   );
 };
