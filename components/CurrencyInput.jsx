@@ -1,8 +1,19 @@
-import { Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
+import CurrencyDropdown from "./CurrencyDropdown";
 
-export default CurrencyInput = ({ label, value, onChange, readOnly = false }) => (
+export default CurrencyInput = ({
+  label,
+  value,
+  onChange,
+  onCurrencyChange,
+  readOnly = false,
+}) => {
+  return (
     <View className="flex-row justify-center items-center">
-      <Text className="mr-4 font-semibold text-xl">{label}</Text>
+      <CurrencyDropdown
+        label={label}
+        onCurrencyChange={onCurrencyChange}
+      />
       <TextInput
         value={value.toString()}
         onChangeText={!readOnly ? onChange : null}
@@ -11,4 +22,4 @@ export default CurrencyInput = ({ label, value, onChange, readOnly = false }) =>
       />
     </View>
   );
-  
+};

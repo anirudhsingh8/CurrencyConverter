@@ -50,6 +50,7 @@ const CurrencyConversionScreen = () => {
       <CurrencyInput
         label={source}
         value={sourceAmt}
+        onCurrencyChange={(val) => setSource(val)}
         onChange={setSourceAmt}
       />
 
@@ -59,6 +60,7 @@ const CurrencyConversionScreen = () => {
       <CurrencyInput
         label={destination}
         value={destinationAmt}
+        onCurrencyChange={(val) => setDestination(val)}
         readOnly={true}
       />
     </View>
